@@ -3,9 +3,9 @@ import subprocess
 import platform
 from PyQt5.QtWidgets import (QApplication, QMainWindow, QWidget, QVBoxLayout, 
                              QHBoxLayout, QLabel, QLineEdit, QPushButton, 
-                             QTextEdit, QGroupBox, QRadioButton)
+                             QTextEdit, QGroupBox, QRadioButton, QFrame)
 from PyQt5.QtCore import Qt, QThread, pyqtSignal
-from PyQt5.QtGui import QFont, QColor
+from PyQt5.QtGui import QFont, QColor, QPalette, QLinearGradient, QBrush, QGradient
 
 
 class PingThread(QThread):
@@ -64,24 +64,51 @@ class ICMPPingApp(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("ICMP Ping Tool")
-        self.setMinimumSize(600, 500)
+        self.setMinimumSize(700, 600)  # Ventana más grande
+        
+        # Configurar el estilo de la aplicación
+        self.setup_styles()
         
         # Widget central y layout principal
         central_widget = QWidget()
         self.setCentralWidget(central_widget)
         main_layout = QVBoxLayout(central_widget)
+        main_layout.setSpacing(15)  # Más espacio entre widgets
+        main_layout.setContentsMargins(20, 20, 20, 20)  # Márgenes más amplios
+        
+        # Título de la aplicación
+        title_label = QLabel("ICMP Ping Tool")
+        title_font = QFont("Arial", 24, QFont.Bold)
+        title_label.setFont(title_font)
+        title_label.setAlignment(Qt.AlignCenter)
+        title_label.setStyleSheet("color: #2c3e50; margin-bottom: 15px;")
+        main_layout.addWidget(title_label)
         
         # Sección de entrada de host
         input_group = QGroupBox("Host de destino")
+        input_group.setStyleSheet(
+            "QGroupBox {font-size: 16px; font-weight: bold; border: 2px solid #3498db; border-radius: 8px; margin-top: 15px; padding-top: 10px;}"
+            "QGroupBox::title {subcontrol-origin: margin; subcontrol-position: top center; padding: 0 10px;}"
+        )
         input_layout = QVBoxLayout()
+        input_layout.setSpacing(15)
         
         # Hosts predefinidos
         predefined_layout = QHBoxLayout()
+        radio_font = QFont("Arial", 12)
+        
         self.radio_custom = QRadioButton("Personalizado:")
+        self.radio_custom.setFont(radio_font)
         self.radio_custom.setChecked(True)
+        
         self.radio_google_dns = QRadioButton("Google DNS (8.8.8.8)")
+        self.radio_google_dns.setFont(radio_font)
+        
         self.radio_local = QRadioButton("Red local (192.168.10.250)")
+        self.radio_local.setFont(radio_font)
+        
         self.radio_google = QRadioButton("www.google.com")
+        self.radio_google.setFont(radio_font)
         
         predefined_layout.addWidget(self.radio_custom)
         predefined_layout.addWidget(self.radio_google_dns)
@@ -97,13 +124,30 @@ class ICMPPingApp(QMainWindow):
         # Campo de entrada para el host
         host_layout = QHBoxLayout()
         host_label = QLabel("Host:")
+        host_label.setFont(QFont("Arial", 14))
+        
         self.host_input = QLineEdit()
+        self.host_input.setFont(QFont("Arial", 14))
         self.host_input.setPlaceholderText("Ingrese dirección IP o nombre de dominio")
+        self.host_input.setStyleSheet(
+            "QLineEdit {padding: 8px; border: 2px solid #3498db; border-radius: 6px; background-color: #f8f9fa;}"
+            "QLineEdit:focus {border-color: #2980b9; background-color: white;}"
+        )
+        
         host_layout.addWidget(host_label)
         host_layout.addWidget(self.host_input)
         
         # Botón de ping
         self.ping_button = QPushButton("Hacer Ping")
+        self.ping_button.setFont(QFont("Arial", 14, QFont.Bold))
+        self.ping_button.setMinimumHeight(50)
+        self.ping_button.setCursor(Qt.PointingHandCursor)  # Cambiar cursor al pasar por encima
+        self.ping_button.setStyleSheet(
+            "QPushButton {background-color: #3498db; color: white; border-radius: 8px; padding: 10px;}"
+            "QPushButton:hover {background-color: #2980b9;}"
+            "QPushButton:pressed {background-color: #1c6ea4;}"
+            "QPushButton:disabled {background-color: #95a5a6; color: #ecf0f1;}"
+        )
         self.ping_button.clicked.connect(self.start_ping)
         
         # Agregar widgets al layout de entrada
@@ -114,9 +158,20 @@ class ICMPPingApp(QMainWindow):
         
         # Área de resultados
         result_group = QGroupBox("Resultados")
+        result_group.setStyleSheet(
+            "QGroupBox {font-size: 16px; font-weight: bold; border: 2px solid #2ecc71; border-radius: 8px; margin-top: 15px; padding-top: 10px;}"
+            "QGroupBox::title {subcontrol-origin: margin; subcontrol-position: top center; padding: 0 10px;}"
+        )
         result_layout = QVBoxLayout()
+        
         self.result_text = QTextEdit()
         self.result_text.setReadOnly(True)
+        self.result_text.setFont(QFont("Consolas", 12))  # Fuente monoespaciada más grande
+        self.result_text.setStyleSheet(
+            "QTextEdit {background-color: #f8f9fa; border: 2px solid #2ecc71; border-radius: 6px; padding: 10px;}"
+        )
+        self.result_text.setMinimumHeight(250)  # Altura mínima para ver más resultados
+        
         result_layout.addWidget(self.result_text)
         result_group.setLayout(result_layout)
         
@@ -127,13 +182,39 @@ class ICMPPingApp(QMainWindow):
         # Inicializar la interfaz
         self.show()
     
+    def setup_styles(self):
+        """Configura los estilos globales de la aplicación"""
+        # Crear un degradado para el fondo
+        palette = QPalette()
+        gradient = QLinearGradient(0, 0, 0, self.height())
+        gradient.setColorAt(0.0, QColor(240, 248, 255))  # Azul muy claro arriba
+        gradient.setColorAt(1.0, QColor(224, 255, 255))  # Azul claro abajo
+        palette.setBrush(QPalette.Window, QBrush(gradient))
+        self.setPalette(palette)
+        
+        # Estilo global para la aplicación
+        self.setStyleSheet("""
+            QMainWindow {background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1, 
+                                                        stop:0 #ecf0f1, stop:1 #e0f7fa);}
+            QLabel {color: #2c3e50;}
+            QRadioButton {color: #2c3e50; spacing: 8px;}
+            QRadioButton::indicator {width: 18px; height: 18px;}
+        """)
+    
     def update_host_input(self):
         """Actualiza el campo de entrada según el radio button seleccionado"""
         if self.radio_custom.isChecked():
             self.host_input.setEnabled(True)
             self.host_input.clear()
+            self.host_input.setStyleSheet(
+                "QLineEdit {padding: 8px; border: 2px solid #3498db; border-radius: 6px; background-color: #f8f9fa;}"
+                "QLineEdit:focus {border-color: #2980b9; background-color: white;}"
+            )
         else:
             self.host_input.setEnabled(False)
+            self.host_input.setStyleSheet(
+                "QLineEdit {padding: 8px; border: 2px solid #bdc3c7; border-radius: 6px; background-color: #ecf0f1;}"
+            )
             if self.radio_google_dns.isChecked():
                 self.host_input.setText("8.8.8.8")
             elif self.radio_local.isChecked():
@@ -164,13 +245,16 @@ class ICMPPingApp(QMainWindow):
     
     def handle_ping_result(self, success, message):
         """Maneja el resultado del ping"""
+        # Configurar fuente para el resultado
+        self.result_text.setCurrentFont(QFont("Consolas", 12))
+        
         if success:
-            self.result_text.setTextColor(QColor(0, 128, 0))  # Verde para éxito
+            self.result_text.setTextColor(QColor(46, 204, 113))  # Verde para éxito
         else:
-            self.result_text.setTextColor(QColor(255, 0, 0))  # Rojo para error
+            self.result_text.setTextColor(QColor(231, 76, 60))  # Rojo para error
         
         self.result_text.append(message)
-        self.result_text.setTextColor(QColor(0, 0, 0))  # Volver a negro
+        self.result_text.setTextColor(QColor(44, 62, 80))  # Color oscuro para texto normal
         
         # Habilitar el botón nuevamente
         self.ping_button.setEnabled(True)
@@ -179,5 +263,6 @@ class ICMPPingApp(QMainWindow):
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
+    app.setStyle("Fusion")  
     window = ICMPPingApp()
     sys.exit(app.exec_())
