@@ -81,13 +81,13 @@ class ICMPPingApp(QMainWindow):
         title_font = QFont("Arial", 24, QFont.Bold)
         title_label.setFont(title_font)
         title_label.setAlignment(Qt.AlignCenter)
-        title_label.setStyleSheet("color: #2c3e50; margin-bottom: 15px;")
+        title_label.setStyleSheet("color: #ffffff; margin-bottom: 15px;")
         main_layout.addWidget(title_label)
         
         # Sección de entrada de host
         input_group = QGroupBox("Host de destino")
         input_group.setStyleSheet(
-            "QGroupBox {font-size: 16px; font-weight: bold; border: 2px solid #3498db; border-radius: 8px; margin-top: 15px; padding-top: 10px;}"
+            "QGroupBox {font-size: 16px; font-weight: bold; color: #ffffff; border: 2px solid #3498db; border-radius: 8px; margin-top: 15px; padding-top: 10px;}"
             "QGroupBox::title {subcontrol-origin: margin; subcontrol-position: top center; padding: 0 10px;}"
         )
         input_layout = QVBoxLayout()
@@ -125,6 +125,7 @@ class ICMPPingApp(QMainWindow):
         host_layout = QHBoxLayout()
         host_label = QLabel("Host:")
         host_label.setFont(QFont("Arial", 14))
+        host_label.setStyleSheet("color: #ffffff;")
         
         self.host_input = QLineEdit()
         self.host_input.setFont(QFont("Arial", 14))
@@ -159,7 +160,7 @@ class ICMPPingApp(QMainWindow):
         # Área de resultados
         result_group = QGroupBox("Resultados")
         result_group.setStyleSheet(
-            "QGroupBox {font-size: 16px; font-weight: bold; border: 2px solid #2ecc71; border-radius: 8px; margin-top: 15px; padding-top: 10px;}"
+            "QGroupBox {font-size: 16px; font-weight: bold; color: #ffffff; border: 2px solid #2ecc71; border-radius: 8px; margin-top: 15px; padding-top: 10px;}"
             "QGroupBox::title {subcontrol-origin: margin; subcontrol-position: top center; padding: 0 10px;}"
         )
         result_layout = QVBoxLayout()
@@ -168,7 +169,7 @@ class ICMPPingApp(QMainWindow):
         self.result_text.setReadOnly(True)
         self.result_text.setFont(QFont("Consolas", 12))  # Fuente monoespaciada más grande
         self.result_text.setStyleSheet(
-            "QTextEdit {background-color: #f8f9fa; border: 2px solid #2ecc71; border-radius: 6px; padding: 10px;}"
+            "QTextEdit {background-color: #1e2a38; color: #ffffff; border: 2px solid #2ecc71; border-radius: 6px; padding: 10px;}"
         )
         self.result_text.setMinimumHeight(250)  # Altura mínima para ver más resultados
         
@@ -184,20 +185,20 @@ class ICMPPingApp(QMainWindow):
     
     def setup_styles(self):
         """Configura los estilos globales de la aplicación"""
-        # Crear un degradado para el fondo
+        # Crear un degradado para el fondo con azul oscuro
         palette = QPalette()
         gradient = QLinearGradient(0, 0, 0, self.height())
-        gradient.setColorAt(0.0, QColor(240, 248, 255))  # Azul muy claro arriba
-        gradient.setColorAt(1.0, QColor(224, 255, 255))  # Azul claro abajo
+        gradient.setColorAt(0.0, QColor(25, 42, 86))  # Azul oscuro arriba
+        gradient.setColorAt(1.0, QColor(13, 27, 62))  # Azul muy oscuro abajo
         palette.setBrush(QPalette.Window, QBrush(gradient))
         self.setPalette(palette)
         
         # Estilo global para la aplicación
         self.setStyleSheet("""
             QMainWindow {background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1, 
-                                                        stop:0 #ecf0f1, stop:1 #e0f7fa);}
-            QLabel {color: #2c3e50;}
-            QRadioButton {color: #2c3e50; spacing: 8px;}
+                                                        stop:0 #192a56, stop:1 #0d1b3e);}
+            QLabel {color: #ffffff;}
+            QRadioButton {color: #ffffff; spacing: 8px;}
             QRadioButton::indicator {width: 18px; height: 18px;}
         """)
     
@@ -228,7 +229,7 @@ class ICMPPingApp(QMainWindow):
         if not host:
             self.result_text.setTextColor(QColor(255, 0, 0))  # Rojo para error
             self.result_text.append("Error: Por favor ingrese un host válido.")
-            self.result_text.setTextColor(QColor(0, 0, 0))  # Volver a negro
+            self.result_text.setTextColor(QColor(255, 255, 255))  # Volver a blanco
             return
         
         # Deshabilitar el botón mientras se ejecuta el ping
@@ -254,7 +255,7 @@ class ICMPPingApp(QMainWindow):
             self.result_text.setTextColor(QColor(231, 76, 60))  # Rojo para error
         
         self.result_text.append(message)
-        self.result_text.setTextColor(QColor(44, 62, 80))  # Color oscuro para texto normal
+        self.result_text.setTextColor(QColor(255, 255, 255))  # Color blanco para texto normal
         
         # Habilitar el botón nuevamente
         self.ping_button.setEnabled(True)
